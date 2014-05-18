@@ -1,39 +1,24 @@
-import subprocess
-from git import *
-import unittest
+#!/usr/bin/env python
 import os
+import unittest
+import subprocess
 
+from git import *
+from py_git_test import *
 
-def run_bash(bash_command):
-    process = subprocess.Popen(bash_command.split(), stdout=subprocess.PIPE)
-    return process.communicate()[0]
 
 class GitUnlock(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         os.environ['PATH'] += ':' + os.path.abspath(
-            os.path.join(os.path.dirname(__file__),".."))
+            os.path.join(os.path.dirname(__file__), ".."))
 
     def setUp(self):
-        self.git_path = os.environ['HOME'] + '/git-boots-test'
-        os.mkdir(self.git_path)
-        os.chdir(self.git_path)
-        git = Git(self.git_path)
-        git.init()
-        with open('test.txt', 'w') as f:
-            f.write('test\n')
-        assert os.path.exists('test.txt')
-
-        git.add('test.txt')
-        git.commit('-m "First commit"')
-
-        with open('.git/index.lock', 'w') as f:
-            f.write('test\n')
-
-        assert os.path.exists('.git/index.lock')
+        self.git = GitTest()
+        self.git.create_file('.git/index.lock')
 
     def tearDown(self):
-        run_bash('rm -rf ' + self.git_path)
+        self.git.clean()
 
     def test_git_unlock(self):
         run_bash('git-unlock')
