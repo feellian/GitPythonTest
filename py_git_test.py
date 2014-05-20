@@ -24,6 +24,7 @@ class GitTest():
 
         self.git = Git(self.git_path)
         self.git.init()
+        self.repo = Repo(self.git_path)
         self.add('test.txt').commit('First commit')
 
     def add(self, filename):
